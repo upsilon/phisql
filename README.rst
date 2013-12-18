@@ -3,8 +3,8 @@ php-sqlbuilder
 
 An SQL query builder for PHP. It can be used to dynamically build SQL queries.
 
-Depencies
----------
+Dependencies
+------------
 
 * PHP 5.3 or higher
 
