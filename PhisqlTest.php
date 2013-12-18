@@ -17,13 +17,13 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, version 2.0
  */
 
-require_once 'SqlBuilder.php';
+require_once 'Phisql.php';
 
-class SqlBuilderTest extends PHPUnit_Framework_TestCase
+class PhisqlTest extends PHPUnit_Framework_TestCase
 {
     public function testSimpleAppend()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('LINE 1');
         $sql->append('LINE 2');
         $sql->append('LINE 3');
@@ -34,7 +34,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testSimpleArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @0 @1', array('a1', 'a2'));
 
         $this->assertEquals('arg @0 @1', $sql->getSql());
@@ -47,7 +47,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testUnusedArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @0 @2', array('a1', 'a2', 'a3'));
 
         $this->assertEquals('arg @0 @1', $sql->getSql());
@@ -60,7 +60,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testUnorderedArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @2 @1', array('a1', 'a2', 'a3'));
 
         $this->assertEquals('arg @0 @1', $sql->getSql());
@@ -73,7 +73,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testRepeatedArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @0 @1 @0 @1', array('a1', 'a2'));
 
         $this->assertEquals('arg @0 @1 @2 @3', $sql->getSql());
@@ -88,7 +88,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testMysqlUserVars()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @@user1 @2 @1 @@@system1', array('a1', 'a2', 'a3'));
 
         $this->assertEquals('arg @@user1 @0 @1 @@@system1', $sql->getSql());
@@ -101,7 +101,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testNamedArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @name @password', array('name' => 'n', 'password' => 'p'));
 
         $this->assertEquals('arg @0 @1', $sql->getSql());
@@ -114,7 +114,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testMixedNamedAndNumberedArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @0 @name @1 @password @2', array('a1', 'a2', 'a3', 'name' => 'n', 'password' => 'p'));
 
         $this->assertEquals('arg @0 @1 @2 @3 @4', $sql->getSql());
@@ -130,7 +130,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testAppendWithArgs()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('l1 @0', 'a0');
         $sql->append('l2 @0', 'a1');
         $sql->append('l3 @0', 'a2');
@@ -146,7 +146,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testAppendWithArgs2()
     {
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('l1');
         $sql->append('l2 @0 @1', array('a1', 'a2'));
         $sql->append('l3 @0', array('a3'));
@@ -164,7 +164,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('OutOfRangeException');
 
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @0 @1', array('a0'));
         $this->assertEquals('arg @0 @1', $sql->getSql());
     }
@@ -173,16 +173,16 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
 
-        $sql = new Sql;
+        $sql = new Phisql;
         $sql->append('arg @name1 @name2', array('x' => 1, 'y' => 2));
         $this->assertEquals('arg @0 @1', $sql->getSql());
     }
 
     public function testAppendInstances()
     {
-        $sql = new Sql('l0 @0', array('a0'));
-        $sql1 = new Sql('l1 @0', array('a1'));
-        $sql2 = new Sql('l2 @0', array('a2'));
+        $sql = new Phisql('l0 @0', array('a0'));
+        $sql1 = new Phisql('l1 @0', array('a1'));
+        $sql2 = new Phisql('l2 @0', array('a2'));
 
         $this->assertSame($sql->append($sql1), $sql);
         $this->assertSame($sql->append($sql2), $sql);
@@ -198,7 +198,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testConsecutiveWhere()
     {
-        $sql = new Sql();
+        $sql = new Phisql();
         $sql->append('SELECT * FROM blah');
 
         $sql->append('WHERE x');
@@ -209,7 +209,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testConsecutiveOrderBy()
     {
-        $sql = new Sql();
+        $sql = new Phisql();
         $sql->append('SELECT * FROM blah');
 
         $sql->append('ORDER BY x');
@@ -220,7 +220,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testParamExpansion1()
     {
-        $sql = Sql::builder()->append('@0 IN (@1) @2', array(20, array(1, 2, 3), 30));
+        $sql = Phisql::builder()->append('@0 IN (@1) @2', array(20, array(1, 2, 3), 30));
 
         $this->assertEquals('@0 IN (@1,@2,@3) @4', $sql->getSql());
 
@@ -236,7 +236,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
     public function testParamExpansion2()
     {
         // Out of order expansion
-        $sql = Sql::builder()->append('IN (@3) (@1)', array(null, array(1, 2, 3), null, array(4, 5, 6)));
+        $sql = Phisql::builder()->append('IN (@3) (@1)', array(null, array(1, 2, 3), null, array(4, 5, 6)));
 
         $this->assertEquals('IN (@0,@1,@2) (@3,@4,@5)', $sql->getSql());
 
@@ -253,7 +253,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
     public function testParamExpansionNamed()
     {
         // Expand a named parameter
-        $sql = Sql::builder()->append('IN (@numbers)', array('numbers' => array(1, 2, 3)));
+        $sql = Phisql::builder()->append('IN (@numbers)', array('numbers' => array(1, 2, 3)));
 
         $this->assertEquals('IN (@0,@1,@2)', $sql->getSql());
 
@@ -266,7 +266,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testJoin()
     {
-        $sql = Sql::builder()
+        $sql = Phisql::builder()
             ->select('*')
             ->from('articles')
             ->leftJoin('comments')->on('articles.article_id=comments.article_id');

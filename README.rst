@@ -1,5 +1,5 @@
-php-sqlbuilder
-==============
+phisql
+======
 
 An SQL query builder for PHP. It can be used to dynamically build SQL queries.
 

@@ -17,7 +17,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, version 2.0
  */
 
-class Sql
+class Phisql
 {
     public function __construct($sql = null, array $args = array())
     {
@@ -68,7 +68,7 @@ class Sql
     }
 
     /**
-     * @param Sql|string $sql
+     * @param Phisql|string $sql
      * @param mixed|mixed[] $args
      */
     public function append($sql, $args = array())
@@ -200,7 +200,7 @@ class Sql
 
     private function join($joinType, $table)
     {
-        return new _SqlJoinClause($this->append(new self($joinType.$table)));
+        return new _PhisqlJoinClause($this->append(new self($joinType.$table)));
     }
 
     public function innerJoin($table)
@@ -214,11 +214,11 @@ class Sql
     }
 }
 
-class _SqlJoinClause
+class _PhisqlJoinClause
 {
     private $_sql;
 
-    public function __construct(Sql $sql)
+    public function __construct(Phisql $sql)
     {
         $this->_sql = $sql;
     }
