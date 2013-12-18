@@ -19,7 +19,7 @@
 
 class Sql
 {
-    public function __construct($sql = null, array $args = [])
+    public function __construct($sql = null, array $args = array())
     {
         $this->_sql = $sql;
         $this->_args = $args;
@@ -45,7 +45,7 @@ class Sql
 
         // Build it
         $this->_sqlFinal = '';
-        $this->_argsFinal = [];
+        $this->_argsFinal = array();
         $this->_build($this->_sqlFinal, $this->_argsFinal, null);
     }
 
@@ -71,7 +71,7 @@ class Sql
      * @param Sql|string $sql
      * @param mixed|mixed[] $args
      */
-    public function append($sql, $args = [])
+    public function append($sql, $args = array())
     {
         if ($sql instanceof self)
         {
@@ -157,7 +157,7 @@ class Sql
         }, $_sql);
     }
 
-    public function where($sql, array $args = [])
+    public function where($sql, array $args = array())
     {
         return $this->append(new self('WHERE ('.$sql.')', $args));
     }
@@ -223,7 +223,7 @@ class _SqlJoinClause
         $this->_sql = $sql;
     }
 
-    public function on($onClause, array $args = [])
+    public function on($onClause, array $args = array())
     {
         return $this->_sql->append('ON '.$onClause, $args);
     }
